@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Jukal 2026"/>
+<title>Jukal 2026</title>
+<style>
+:root{
+  --bg:#080808;--bg2:#101010;--bg3:#161616;--bg4:#1c1c1c;--bg5:#222;
+  --gold:#c8a250;--gold2:#e8c870;--gold3:#f0d890;
+  --green:#5aaa3a;--green2:#2a5a1a;
+  --blue:#4a8ab0;--purple:#7a68b8;--red:#c04840;--orange:#c87830;
+  --text:#ddd8cc;--text2:#999;--text3:#555;--text4:#333;
+  --r:12px;--safe:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overscroll-behavior:none;}
+body{background:var(--bg);color:var(--text);font-family:'Georgia',serif;
+  padding-bottom:calc(68px + var(--safe));}
+
+/* NAV */
+#nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.96);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-top:1px solid var(--bg4);display:flex;z-index:100;
+  padding-bottom:var(--safe);}
+.nb{flex:1;padding:10px 2px 8px;background:none;border:none;color:var(--text3);
+  cursor:pointer;font-size:9px;font-family:'Courier New',monospace;letter-spacing:.06em;
+  display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .2s;}
+.nb.on{color:var(--gold);}
+.nb svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.5;}
+
+/* SCREENS */
+.scr{display:none;}.scr.on{display:block;}
+
+/* TOPBAR */
+.top{padding:54px 16px 0;background:linear-gradient(180deg,#121212 0%,var(--bg) 100%);}
+.top-eyebrow{font-size:9px;color:var(--text3);font-family:'Courier New',monospace;
+  letter-spacing:.22em;text-transform:uppercase;margin-bottom:3px;}
+.top-title{font-size:21px;color:var(--text);font-weight:400;line-height:1.2;}
+.top-sub{font-size:11px;color:var(--text3);margin-top:3px;font-family:'Courier New',monospace;}
+
+/* INNER TABS */
+.itabs{display:flex;overflow-x:auto;padding:14px 16px 0;gap:0;
+  border-bottom:1px solid var(--bg4);scrollbar-width:none;}
+.itabs::-webkit-scrollbar{display:none;}
+.itab{flex-shrink:0;padding:9px 13px;background:none;border:none;
+  border-bottom:2px solid transparent;color:var(--text3);cursor:pointer;
+  font-size:11px;font-family:'Courier New',monospace;letter-spacing:.07em;
+  white-space:nowrap;transition:all .2s;margin-bottom:-1px;}
+.itab.on{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* SECTION LABEL */
+.sl{font-size:9px;color:var(--text3);font-family:'Courier New',monospace;
+  letter-spacing:.2em;text-transform:uppercase;padding:16px 16px 8px;}
+
+/* CARD */
+.card{background:var(--bg2);border:1px solid var(--bg4);border-radius:var(--r);
+  margin:0 16px 10px;overflow:hidden;}
+
+/* WEEK STRIP */
+.wstrip{display:flex;gap:5px;padding:14px 16px 0;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.wstrip::-webkit-scrollbar{display:none;}
+.wd{flex:0 0 42px;height:58px;border-radius:9px;border:1.5px solid transparent;
+  background:var(--bg2);display:flex;flex-direction:column;align-items:center;
+  justify-content:center;cursor:pointer;transition:all .15s;gap:1px;}
+.wd.sel{border-color:var(--gold);background:#181208;}
+.wd.tod{background:#121008;}
+.wd-n{font-size:9px;color:var(--text3);font-family:'Courier New',monospace;}
+.wd-d{font-size:15px;color:var(--text2);font-weight:600;}
+.wd.sel .wd-d{color:var(--gold);}
+.wd.tod .wd-n{color:var(--gold);}
+.wd-dot{width:4px;height:4px;border-radius:50%;background:var(--green);}
+
+/* RING */
+.ring-w{position:relative;width:62px;height:62px;flex-shrink:0;}
+.ring-w svg{transform:rotate(-90deg);}
+.ring-pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:12px;font-family:'Courier New',monospace;font-weight:700;}
+
+/* PROGRESS BAR */
+.pbar{height:2px;background:var(--bg4);margin:10px 16px 0;border-radius:2px;overflow:hidden;}
+.pfill{height:100%;border-radius:2px;transition:width .4s;}
+
+/* STAT ROW */
+.stats{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;scrollbar-width:none;}
+.stats::-webkit-scrollbar{display:none;}
+.stat{flex:0 0 auto;background:var(--bg2);border:1px solid var(--bg4);
+  border-radius:10px;padding:9px 14px;min-width:88px;}
+.stat-v{font-size:17px;color:var(--gold);font-family:'Courier New',monospace;font-weight:700;}
+.stat-l{font-size:9px;color:var(--text3);font-family:'Courier New',monospace;margin-top:1px;}
+
+/* HABIT */
+.hab{display:flex;align-items:flex-start;gap:11px;padding:12px 14px;
+  border-bottom:1px solid var(--bg4);cursor:pointer;transition:background .12s;
+  -webkit-user-select:none;user-select:none;}
+.hab:last-child{border-bottom:none;}
+.hab:active{background:#141414;}
+.hab.done{background:#0b120a;}
+.chk{width:23px;height:23px;border-radius:6px;flex-shrink:0;margin-top:1px;
+  border:1.5px solid var(--bg5);display:flex;align-items:center;justify-content:center;
+  transition:all .15s;}
+.hab.done .chk{background:var(--green);border-color:var(--green);}
+.chk-m{display:none;color:#fff;font-size:13px;}
+.hab.done .chk-m{display:block;}
+.hab-txt{flex:1;}
+.hab-lbl{font-size:14px;color:var(--text2);transition:color .15s;line-height:1.3;}
+.hab.done .hab-lbl{color:#4a8a34;text-decoration:line-through;}
+.hab-det{font-size:11px;color:var(--text3);margin-top:3px;font-family:'Courier New',monospace;line-height:1.5;}
+
+/* ACCORDION */
+.acc-hdr{display:flex;justify-content:space-between;align-items:flex-start;
+  padding:13px 14px;cursor:pointer;gap:10px;}
+.acc-hdr-l{flex:1;}
+.acc-eyebrow{font-size:9px;font-family:'Courier New',monospace;letter-spacing:.15em;
+  text-transform:uppercase;margin-bottom:4px;}
+.acc-title{font-size:13px;color:var(--text);line-height:1.35;}
+.acc-arrow{color:var(--text3);font-size:12px;transition:transform .25s;flex-shrink:0;padding-top:3px;}
+.card.op .acc-arrow{transform:rotate(180deg);}
+.acc-body{display:none;border-top:1px solid var(--bg4);}
+.card.op .acc-body{display:block;}
+
+/* LAW BLOCK */
+.law{background:#0c0a14;border-left:2px solid var(--purple);padding:9px 11px;
+  border-radius:0 6px 6px 0;font-size:11px;color:var(--text3);font-family:'Courier New',monospace;
+  line-height:1.65;margin:10px 14px;font-style:italic;}
+.explain{font-size:13px;color:var(--text2);line-height:1.8;padding:0 14px 6px;}
+.explain strong{color:var(--text);font-weight:600;}
+.explain b{color:var(--gold);}
+.trap{background:#140a0a;border-left:2px solid var(--red);padding:9px 11px;
+  border-radius:0 6px 6px 0;margin:6px 14px 12px;font-size:12px;color:#b07070;line-height:1.65;}
+.trap-lbl{font-size:8px;color:var(--red);font-family:'Courier New',monospace;
+  letter-spacing:.18em;margin-bottom:3px;}
+.tip{background:#0a100c;border-left:2px solid var(--green);padding:9px 11px;
+  border-radius:0 6px 6px 0;margin:6px 14px 12px;font-size:12px;color:#608060;line-height:1.65;}
+.tip-lbl{font-size:8px;color:var(--green);font-family:'Courier New',monospace;
+  letter-spacing:.18em;margin-bottom:3px;}
+
+/* STEP LIST */
+.steps{padding:8px 14px 14px;}
+.step{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--bg4);
+  font-size:13px;color:var(--text2);line-height:1.5;align-items:flex-start;}
+.step:last-child{border-bottom:none;}
+.step-n{font-size:11px;color:var(--gold);font-family:'Courier New',monospace;
+  flex-shrink:0;margin-top:2px;min-width:18px;}
+
+/* KV ROW */
+.kv{display:flex;justify-content:space-between;align-items:flex-start;
+  gap:10px;padding:9px 14px;border-bottom:1px solid var(--bg4);}
+.kv:last-child{border-bottom:none;}
+.kv-k{font-size:12px;color:var(--text3);flex:1.2;line-height:1.4;}
+.kv-v{font-size:12px;color:var(--blue);text-align:right;flex:1;
+  font-family:'Courier New',monospace;line-height:1.4;}
+
+/* SPORT TABLE */
+.sport-row{padding:12px 14px;border-bottom:1px solid var(--bg4);}
+.sport-row:last-child{border-bottom:none;}
+.sport-row-hdr{font-size:10px;font-family:'Courier New',monospace;letter-spacing:.15em;
+  text-transform:uppercase;margin-bottom:6px;}
+.sport-detail{font-size:13px;color:var(--text2);line-height:1.7;}
+.sport-detail b{color:var(--text);}
+
+/* TOAST */
+#toast{position:fixed;top:58px;left:50%;transform:translateX(-50%) translateY(-70px);
+  background:#0d1a0d;border:1px solid var(--green);border-radius:8px;
+  padding:8px 16px;font-size:11px;color:var(--green);font-family:'Courier New',monospace;
+  z-index:200;transition:transform .28s;pointer-events:none;white-space:nowrap;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+
+/* MONTH BADGE */
+.month-badge{margin:0 16px 10px;padding:12px 14px;border-radius:var(--r);
+  background:#0e0c08;border:1px solid #2a2010;}
+.mb-date{font-size:9px;color:var(--gold);font-family:'Courier New',monospace;
+  letter-spacing:.18em;margin-bottom:3px;}
+.mb-title{font-size:15px;color:var(--text);margin-bottom:3px;}
+.mb-theme{font-size:12px;color:var(--text3);font-style:italic;}
+
+/* SCRIPT BLOCK */
+.script{background:#0a0e14;border-radius:8px;padding:12px 13px;
+  font-size:13px;color:#8090b0;line-height:1.85;font-style:italic;
+  border-left:2px solid var(--blue);margin:8px 14px;}
+.script b{color:#a0b8d0;font-style:normal;}
+
+/* DIVIDER */
+.div{height:1px;background:var(--bg4);margin:4px 14px;}
+</style>
+</head>
+<body>
+
+<div id="toast">✓ Complété</div>
+
+<!-- ══════════════════════════════════════════════════════════ TRACKER -->
+<div id="s-tracker" class="scr on">
+  <div class="top" style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:10px;">
+    <div>
+      <div class="top-eyebrow">Blueprint · Jukal 2026</div>
+      <div class="top-title" id="h-date">—</div>
+      <div class="top-sub" id="h-sub">—</div>
+    </div>
+    <div class="ring-w" style="margin-top:2px;">
+      <svg width="62" height="62" viewBox="0 0 62 62">
+        <circle cx="31" cy="31" r="25" fill="none" stroke="#1c1c1c" stroke-width="5"/>
+        <circle id="ring-c" cx="31" cy="31" r="25" fill="none" stroke="#c8a250"
+          stroke-width="5" stroke-dasharray="0 157" stroke-linecap="round"/>
+      </svg>
+      <div class="ring-pct" id="ring-p" style="color:#c8a250">0%</div>
+    </div>
+  </div>
+
+  <div class="wstrip" id="wstrip"></div>
+  <div class="pbar"><div class="pfill" id="pfill" style="width:0%;background:var(--gold);"></div></div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-v" id="s-done">0</div><div class="stat-l">Aujourd'hui</div></div>
+    <div class="stat"><div class="stat-v" id="s-str">0</div><div class="stat-l">Streak jours</div></div>
+    <div class="stat"><div class="stat-v" id="s-wk">0%</div><div class="stat-l">Semaine</div></div>
+  </div>
+
+  <div class="sl">☀ Matin</div>
+  <div class="card">
+    <div id="h-wake"    class="hab" onclick="tog('wake')">    <div class="chk"><span class="chk-m">✓</span></div><div class="hab-txt"><div class="hab-lbl">Réveil avant 7h00</div><div class="hab-det">Pas de téléphone 20 min · eau · fenêtre ouverte</div></div></div>
+    <div id="h-sport"   class="hab" onclick="tog('sport')">   <div class="chk"><span class="chk-m">✓</span></div><div class="hab-txt"><div class="hab-lbl">Sport du matin</div><div class="hab-det" id="d-sport">—</div></div></div>
+    <div id="h-shower"  class="hab" onclick="tog('shower')">  <div class="chk"><span class="chk-m">✓</span></div><div class="hab-txt"><div class="hab-lbl">Douche + habillé propre</div><div class="hab-det">Même à la maison — change l'état mental</div></div></div>
+    <div id="h-work"    class="hab" onclick="tog('work')">    <div class="chk"><span class="chk-m">✓</span></div><div class="hab-txt"><div class="hab-lbl">Bloc IA / Carrière</div><div class="hab-det" id="d-work">—</div></div></div>
+    <div id="h-spanish" class="hab" onclick="tog('spanish')"> <div class="chk"><span class="chk-m">✓</span></div><div class="hab-txt"><div class="hab-lbl">Espagnol actif (45 min)</div><div class="hab-det" id="d-spanish">—</div></div></div>
+  </div>
+
+  <div class="sl">🌤 Après-midi</div>
+  <div class="card">
+    <div id="h-read"    class="hab" onclick="tog('read')">    <div class="chk"><span class="chk-m">✓</span></div><div class="hab-txt"><div class="hab-lbl">Lecture / Leadership</div><div class="hab-det" id="d-read">—</div></div></div>
+    <div id="h-finance" class="hab" onclick="tog('finance')"> <div class="chk"><span class="chk-m">✓</span></div><div class="hab-txt"><div class="hab-lbl">Budget · Suivi financier</div><div class="hab-det">Note tes dépenses · vérifie ton budget</div></div></div>
+  </div>
+
+  <div class="sl">🌙 Soir</div>
+  <div class="card">
+    <div id="h-epass"   class="hab" onclick="tog('epass')">   <div class="chk"><span class="chk-m">✓</span></div><div class="hab-txt"><div class="hab-lbl">Espagnol passif (20 min)</div><div class="hab-det" id="d-epass">—</div></div></div>
+    <div id="h-journal" class="hab" onclick="tog('journal')"> <div class="chk"><span class="chk-m">✓</span></div><div class="hab-txt"><div class="hab-lbl">Journal · 3 lignes</div><div class="hab-det">Accompli · Frein · Demain</div></div></div>
+    <div id="h-prep"    class="hab" onclick="tog('prep')">    <div class="chk"><span class="chk-m">✓</span></div><div class="hab-txt"><div class="hab-lbl">Préparer le lendemain (5 min)</div><div class="hab-det">Vêtements sport posés · top 3 tâches écrites</div></div></div>
+    <div id="h-bed"     class="hab" onclick="tog('bed')">     <div class="chk"><span class="chk-m">✓</span></div><div class="hab-txt"><div class="hab-lbl">Couché avant 23h00</div><div class="hab-det">7h30 de sommeil minimum</div></div></div>
+  </div>
+
+  <div style="margin:12px 16px;padding:12px 14px;border-radius:var(--r);
+    background:#090f09;border:1px solid #182018;">
+    <div style="font-size:9px;color:var(--green);font-family:'Courier New',monospace;
+      letter-spacing:.18em;margin-bottom:6px;">MINIMUM VIABLE DAY — jours difficiles</div>
+    <div style="font-size:12px;color:var(--text3);line-height:1.9;">
+      Réveil à l'heure &nbsp;·&nbsp; 10 min mouvement &nbsp;·&nbsp; 20 min espagnol (Duolingo compte) &nbsp;·&nbsp; 10 pages lues &nbsp;·&nbsp; Journal soir<br>
+      <span style="color:#3a6a3a;font-size:11px;">→ Ces 5 actions = tu n'as pas perdu ta journée.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ PROGRAMME -->
+<div id="s-plan" class="scr">
+  <div class="top" style="padding-bottom:0;">
+    <div class="top-eyebrow">Programme détaillé</div>
+    <div class="top-title">Semaine par semaine</div>
+    <div class="top-sub">Mai 2026 → Décembre 2026 · Ressources précises</div>
+  </div>
+  <div class="itabs" id="plan-tabs"></div>
+  <div id="plan-body" style="padding-top:8px;"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ SPORT -->
+<div id="s-sport" class="scr">
+  <div class="top" style="padding-bottom:0;">
+    <div class="top-eyebrow">Programme Sport</div>
+    <div class="top-title">Course + Renforcement</div>
+    <div class="top-sub">100 kg · 1m98 · Objectif forme & dos · Sans matériel</div>
+  </div>
+  <div class="itabs" id="sport-tabs"></div>
+  <div id="sport-body" style="padding-top:8px;"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ SUP -->
+<div id="s-sup" class="scr">
+  <div class="top" style="padding-bottom:0;">
+    <div class="top-eyebrow">Speaker · Constitution Africa University SU</div>
+    <div class="top-title">Maîtrise juridique complète</div>
+    <div class="top-sub">Articles · Explications · Scripts · Scénarios</div>
+  </div>
+  <div class="itabs" id="sup-tabs"></div>
+  <div id="sup-body" style="padding-top:4px;"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ GUIDE SAFARI -->
+<div id="s-guide" class="scr">
+  <div class="top" style="padding-bottom:10px;">
+    <div class="top-eyebrow">Installation</div>
+    <div class="top-title">Ouvrir sur Safari</div>
+    <div class="top-sub">Installer comme une vraie app iPhone</div>
+  </div>
+  <div id="guide-body"></div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <button class="nb on"  id="nb-tracker" onclick="goTo('tracker')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><circle cx="17.5" cy="17.5" r="3.5"/></svg>Tracker
+  </button>
+  <button class="nb" id="nb-plan"    onclick="goTo('plan')">
+    <svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Programme
+  </button>
+  <button class="nb" id="nb-sport"   onclick="goTo('sport')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>Sport
+  </button>
+  <button class="nb" id="nb-sup"     onclick="goTo('sup')">
+    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>SUP · Loi
+  </button>
+  <button class="nb" id="nb-guide"   onclick="goTo('guide')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Guide
+  </button>
+</nav>
+
+<script>
+// ─── CORE ─────────────────────────────────────────────────────────────────────
+const HABS=['wake','sport','shower','work','spanish','read','finance','epass','journal','prep','bed'];
+let ST=JSON.parse(localStorage.getItem('j26v2')||'{"ch":{}}');
+let selD=todayKey();
+
+function todayKey(){return new Date().toISOString().slice(0,10);}
+function save(){localStorage.setItem('j26v2',JSON.stringify(ST));}
+
+const MO=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+const DA=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+function fmtD(d){return DA[d.getDay()]+' '+d.getDate()+' '+MO[d.getMonth()];}
+// Weeks since May 27 2026
+function wkNum(d){return Math.max(1,Math.floor((d-new Date('2026-05-27'))/(7*864e5))+1);}
+
+function goTo(s){
+  document.querySelectorAll('.scr').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('on'));
+  document.getElementById('s-'+s).classList.add('on');
+  document.getElementById('nb-'+s).classList.add('on');
+  window.scrollTo(0,0);
+  if(s==='plan')   {buildPlanTabs();renderPlan(0);}
+  if(s==='sport')  {buildSportTabs();renderSport(0);}
+  if(s==='sup')    {buildSupTabs();renderSup(0);}
+  if(s==='guide')  renderGuide();
+}
+
+// ─── HABIT DYNAMIC DETAILS ────────────────────────────────────────────────────
+function habDetails(date){
+  const d=new Date(date+'T12:00:00'),dow=d.getDay(),wk=wkNum(d);
+  const isCourse=[1,3,5].includes(dow),isRenf=[2,4,6].includes(dow);
+
+  // SPORT — distance + séries adaptées taille/poids
+  let sport='';
+  if(isCourse){
+    if(wk<=2)      sport='🏃 Course : 2 km — alterner 3 min jogging / 2 min marche · Rythme conversation';
+    else if(wk<=4) sport='🏃 Course : 3 km — jogging continu possible · Rythme lent mais régulier';
+    else if(wk<=6) sport='🏃 Course : 4 km — vise aucune pause · environ 26–28 min';
+    else if(wk<=8) sport='🏃 Course : 5 km — objectif premier 5K · note ton temps';
+    else if(wk<=12)sport='🏃 Course : 5–6 km · Inclure 2×500m légèrement plus rapide au milieu';
+    else           sport='🏃 Course : 6–7 km · Maintien pendant semestre · 3×/semaine non négociable';
+  } else if(isRenf){
+    if(wk<=2)      sport='💪 RENFORCEMENT A (voir onglet Sport pour détail complet)';
+    else if(wk<=4) sport='💪 RENFORCEMENT B — séries augmentées';
+    else if(wk<=6) sport='💪 RENFORCEMENT C — 4 séries, moins de repos';
+    else if(wk<=8) sport='💪 RENFORCEMENT D — ajout gainage + étirements dos';
+    else if(wk<=12)sport='💪 RENFORCEMENT E — programme complet · voir onglet Sport';
+    else           sport='💪 RENFORCEMENT MAINTIEN · 3 séries · reste actif pendant semestre';
+  } else {
+    sport='🚶 Repos actif : marche 20 min + mobilité hanche/dos 10 min · Étirements grand dorsal';
+  }
+
+  // ESPAGNOL
+  let spanish='';
+  if(wk<=2)       spanish='Language Transfer Leçon '+(Math.min((wk-1)*5+(dow||1),12))+' + Duolingo 15 min';
+  else if(wk<=5)  spanish='Language Transfer + Anki 10 mots + Dreaming Spanish 20 min';
+  else if(wk<=8)  spanish='SpanishPod101 intermédiaire + Écrire 5 phrases de ta journée en espagnol';
+  else if(wk<=12) spanish='Conversation HelloTalk 20 min + Netflix "Club de Cuervos" sous-titres ES';
+  else if(wk<=18) spanish='Conversation 25 min + Podcast "Notes in Spanish" intermédiaire';
+  else            spanish='Maintien : 30 min/jour · Série Netflix + Anki 5 mots · Conversation 2×/semaine';
+
+  // ESPAGNOL PASSIF SOIR
+  let epass='';
+  if(wk<=4)       epass='Playlist "Top Latin 2025" pendant le dîner · Écoute active';
+  else if(wk<=8)  epass='Podcast "Notes in Spanish Beginners" (YouTube, gratuit) — 1 épisode';
+  else if(wk<=12) epass='"Extra en Español" YouTube S1 (série pédagogique gratuite) — 1 épisode';
+  else if(wk<=18) epass='"Club de Cuervos" Netflix S1 — sous-titres EN espagnol';
+  else            epass='Film ou série espagnol — essaie sans sous-titres 10 min';
+
+  // TRAVAIL IA
+  let work='';
+  if(wk<=2)       work='Python : HackerRank 2 exercices Easy · révise listes, dicts, fonctions';
+  else if(wk<=5)  work='Google ML Crash Course — 1 module/jour (gratuit) · prends des notes';
+  else if(wk<=8)  work='Kaggle Titanic dataset : EDA avec pandas · entraîne un premier modèle';
+  else if(wk<=12) work='Construis un mini-projet : chatbot simple OU classifier de texte';
+  else if(wk<=18) work='Révision modules semestre IA · comble les lacunes identifiées · GitHub README';
+  else            work='Cours + projets semestre · applique ML à tes problèmes de cours';
+
+  // LECTURE
+  let read='';
+  if(wk<=4)       read='"Talk Like TED" (Gallo) — 1 chapitre · note 1 technique applicable';
+  else if(wk<=8)  read='"The 21 Laws of Leadership" (Maxwell) — 1 loi/jour · note l\'application';
+  else if(wk<=12) read='"Robert\'s Rules of Order" résumé en ligne · prépare ta fiche Speaker';
+  else if(wk<=18) read='"Atomic Habits" (Clear) — applique 1 idée par chapitre à ta vie';
+  else            read='Livre de cours ou "Deep Work" (Newport) — 30 pages';
+
+  return{sport,spanish,epass,work,read};
+}
+
+// ─── TRACKER RENDER ───────────────────────────────────────────────────────────
+function renderTracker(){
+  const d=new Date(selD+'T12:00:00');
+  document.getElementById('h-date').textContent=fmtD(d);
+  const wk=wkNum(d);
+  document.getElementById('h-sub').textContent=
+    wk<=10?`Vacances · Semaine ${wk}`:'Semestre · Semaine '+(wk-10);
+
+  const det=habDetails(selD);
+  document.getElementById('d-sport').textContent=det.sport;
+  document.getElementById('d-work').textContent=det.work;
+  document.getElementById('d-spanish').textContent=det.spanish;
+  document.getElementById('d-epass').textContent=det.epass;
+  document.getElementById('d-read').textContent=det.read;
+
+  const dc=ST.ch[selD]||{};
+  HABS.forEach(h=>{document.getElementById('h-'+h)?.classList.toggle('done',!!dc[h]);});
+
+  const done=HABS.filter(h=>dc[h]).length,pct=done/HABS.length;
+  const col=pct>=.8?'#5aaa3a':pct>=.5?'#c8a250':'#c04840';
+  const circ=2*Math.PI*25;
+  const rc=document.getElementById('ring-c');
+  rc.setAttribute('stroke-dasharray',`${circ*pct} ${circ}`);
+  rc.setAttribute('stroke',col);
+  document.getElementById('ring-p').textContent=Math.round(pct*100)+'%';
+  document.getElementById('ring-p').style.color=col;
+  document.getElementById('pfill').style.width=(pct*100)+'%';
+  document.getElementById('pfill').style.background=col;
+  document.getElementById('s-done').textContent=`${done}/${HABS.length}`;
+
+  // streak
+  let streak=0;
+  const td=new Date(todayKey()+'T12:00:00');
+  for(let i=0;i<90;i++){const dd=new Date(td);dd.setDate(td.getDate()-i);
+    const k=dd.toISOString().slice(0,10);const cnt=HABS.filter(h=>(ST.ch[k]||{})[h]).length;
+    if(cnt>=5)streak++;else if(i>0)break;}
+  document.getElementById('s-str').textContent=streak;
+
+  // week avg
+  const mon=new Date();mon.setDate(new Date().getDate()-((new Date().getDay()+6)%7));
+  let tot=0,days=0;
+  for(let i=0;i<7;i++){const dd=new Date(mon);dd.setDate(mon.getDate()+i);
+    const k=dd.toISOString().slice(0,10);const cnt=HABS.filter(h=>(ST.ch[k]||{})[h]).length;
+    if(cnt>0){tot+=cnt/HABS.length;days++;}}
+  document.getElementById('s-wk').textContent=days>0?Math.round(tot/days*100)+'%':'0%';
+
+  renderStrip();
+}
+
+function renderStrip(){
+  const strip=document.getElementById('wstrip');strip.innerHTML='';
+  const today=new Date();
+  const mon=new Date(today);mon.setDate(today.getDate()-((today.getDay()+6)%7));
+  const DNL=['L','M','M','J','V','S','D'];
+  for(let i=0;i<7;i++){
+    const d=new Date(mon);d.setDate(mon.getDate()+i);
+    const k=d.toISOString().slice(0,10);
+    const isT=k===todayKey(),isS=k===selD;
+    const done=HABS.filter(h=>(ST.ch[k]||{})[h]).length;
+    const el=document.createElement('div');
+    el.className='wd'+(isT?' tod':'')+(isS?' sel':'');
+    el.innerHTML=`<div class="wd-n">${DNL[i]}</div><div class="wd-d">${d.getDate()}</div>${done>0?'<div class="wd-dot"></div>':''}`;
+    el.onclick=()=>{selD=k;renderTracker();};
+    strip.appendChild(el);
+  }
+}
+
+function tog(h){
+  if(!ST.ch[selD])ST.ch[selD]={};
+  ST.ch[selD][h]=!ST.ch[selD][h];save();renderTracker();
+  if(ST.ch[selD][h]){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1400);}
+}
+
+// ─── PLAN DATA ────────────────────────────────────────────────────────────────
+// 8 months: Mai→Déc with week-by-week breakdown
+const PLAN_MONTHS=[
+  {id:0,label:"Mai",short:"Mai",dates:"27–31 mai 2026",theme:"Semaine d'installation",
+   obj:["Installer la routine de base sans pression","Commencer Language Transfer leçon 1–5","Installer Anki, créer compte HelloTalk","Lire constitution art. 13 (SUP) une première fois","Test : lever à 7h pendant 5 jours"],
+   weeks:[
+    {w:"27–31 mai",days:[
+      {n:"Lun 27",tasks:[
+        {c:"sport",t:"Course : 2 km — alterner 3 min jogging / 2 min marche. Pas de montre, rythme confort."},
+        {c:"es",t:"Language Transfer Leçon 1 (YouTube, cherche 'Language Transfer Spanish') — 30 min"},
+        {c:"ai",t:"HackerRank Python : crée un compte, fais 2 exercices 'Intro' (listes)"},
+        {c:"lead",t:"Lis constitution Art. 13.1 (composition SUP) et Art. 13.3 (meetings) — prends 5 notes"},
+        {c:"fin",t:"Ouvre un carnet ou Google Sheets : liste toutes tes dépenses des 7 derniers jours"},
+      ]},
+      {n:"Mar 28",tasks:[
+        {c:"sport",t:"💪 RENFORCEMENT SEMAINE 1 : 3 séries de → 8 pompes (mains larges) · 12 squats · 15 sec planche · 10 dips chaise. Repos 90 sec entre séries."},
+        {c:"es",t:"Language Transfer Leçon 2 + Duolingo 15 min · Installe Anki (gratuit) : crée tes 10 premiers mots"},
+        {c:"ai",t:"Lis 'What is Machine Learning' — cherche l'article Google ML Crash Course, lis l'intro"},
+        {c:"lead",t:"YouTube : recherche 'UK Parliament Speaker ruling point of order' — 15 min, note le ton"},
+        {c:"fin",t:"Identifie tes 3 plus grosses dépenses non-essentielles. Lesquelles peux-tu couper ?"},
+      ]},
+      {n:"Mer 29",tasks:[
+        {c:"sport",t:"Course : 2,5 km — essaie de courir 15 min sans pause cette fois"},
+        {c:"es",t:"Language Transfer Leçon 3 · Écoute 'Despacito' en lisant les paroles — articule"},
+        {c:"ai",t:"HackerRank : 2 exercices Python — dictionnaires et fonctions"},
+        {c:"lead",t:"Lis Art. 8 (Authority hierarchy) + Art. 9.1 (Ordinary GM) — résume en 10 lignes"},
+        {c:"fin",t:"Calcule ton budget mensuel : revenus disponibles / dépenses fixes / reste libre"},
+      ]},
+      {n:"Jeu 30",tasks:[
+        {c:"sport",t:"💪 RENFORCEMENT SEMAINE 1 (répète lundi) : 3×(8 pompes · 12 squats · 15 sec planche · 10 dips)"},
+        {c:"es",t:"Language Transfer Leçon 4 · Anki : 10 nouveaux mots (jours de la semaine, mois)"},
+        {c:"ai",t:"Google ML Crash Course : module 'Framing' — lis + note les exemples"},
+        {c:"lead",t:"Regarde 'Toastmasters World Champion Speech 2019' (YouTube) — note 3 techniques"},
+        {c:"fin",t:"Recherche : 'freelance AI prompt engineer' sur Fiverr — note les tarifs, l'offre"},
+      ]},
+      {n:"Ven 31",tasks:[
+        {c:"sport",t:"Course : 3 km — rythme conversation. Si tu dois marcher, marche 90 sec max puis reprends."},
+        {c:"es",t:"Language Transfer Leçon 5 · Écoute 'Notes in Spanish Beginners Ep.1' (YouTube)"},
+        {c:"ai",t:"HackerRank : 2 ex. Python · Commence à lire intro 'Python for Data Analysis'"},
+        {c:"lead",t:"Pratique à voix haute : présente-toi comme Speaker en 2 min. Enregistre. Réécoute."},
+        {c:"fin",t:"Bilan mai : dépenses vs budget. Qu'est-ce qui s'est passé ? 3 lignes dans le journal."},
+      ]},
+    ]}
+  ]},
+  {id:1,label:"Juin",short:"Jun",dates:"1–30 juin 2026",theme:"Mise en régime — routine à 70%",
+   obj:["Course : atteindre 4 km continus","Language Transfer terminé (leçon 12)","ML Crash Course module 1 et 2","Renforcement : 4 séries, 15 pompes","Lecture : finir Talk Like TED · commencer Maxwell"],
+   weeks:[
+    {w:"1–7 juin",days:[
+      {n:"Lun 1",tasks:[
+        {c:"sport",t:"Course : 3 km — vise 20 min de jogging continu. Si tu marches, note combien de fois."},
+        {c:"es",t:"Language Transfer Leçon 6 · Anki révision + 10 mots (famille, métiers)"},
+        {c:"ai",t:"ML Crash Course : 'Descending into ML' — gradient descent, comprends le concept"},
+        {c:"lead",t:"Talk Like TED Chap. 1 : 'Unleash the Master Within' — quelle est ta passion ?"},
+        {c:"fin",t:"Système enveloppes : Alimentaire / Transport / Loisirs / Épargne — allocations fixes"},
+      ]},
+      {n:"Mar 2",tasks:[
+        {c:"sport",t:"💪 RENFORCEMENT S2 : 3×(10 pompes mains larges · 14 squats · 20 sec planche · 10 dips · 8 pompes inclinées mains sur chaise pour haut pec)"},
+        {c:"es",t:"Language Transfer Leçon 7 · Dreaming Spanish : 'Comprehensible Input Beginner' (YouTube)"},
+        {c:"ai",t:"HackerRank : 2 ex. Python — travaille sur les fonctions et les classes"},
+        {c:"lead",t:"Lis Art. 11 (SRC complet) + Art. 12 (Comités SRC) — qui fait quoi précisément ?"},
+        {c:"fin",t:"Explore : 'Python for Finance YouTube tutorial' — premier chapitre"},
+      ]},
+      {n:"Mer 3",tasks:[
+        {c:"sport",t:"Course : 3,5 km — vise 25 min continus"},
+        {c:"es",t:"Language Transfer Leçon 8 · Lis article simple sur BBC Mundo (en espagnol)"},
+        {c:"ai",t:"ML Crash Course : 'Reducing Loss' · Comprends l'optimisation"},
+        {c:"lead",t:"Simule : tu ouvres une session SUP. Dis à voix haute l'ouverture formelle (3 min)"},
+        {c:"fin",t:"Installe une app de suivi (Money Manager ou Notes Apple) — tracker dépenses quotidien"},
+      ]},
+      {n:"Jeu 4",tasks:[
+        {c:"sport",t:"💪 RENFORCEMENT S2 (même que mardi) : 3×(10 pompes · 14 squats · 20 sec planche · 10 dips · 8 pompes inclinées)"},
+        {c:"es",t:"Language Transfer Leçon 9 · Anki : révision totale + 10 mots (verbes courants)"},
+        {c:"ai",t:"Kaggle : crée ton compte · explore le dataset Titanic · charge en Python"},
+        {c:"lead",t:"Regarde session 'African Union Parliament' sur YouTube — observe le Président de séance"},
+        {c:"fin",t:"Écris ta vision financière 2027 : 3 lignes sur où tu veux être"},
+      ]},
+      {n:"Ven 5",tasks:[
+        {c:"sport",t:"Course : 3,5 km — maintiens le rythme sans regarder la montre"},
+        {c:"es",t:"Language Transfer Leçon 10 · Chante fort une chanson espagnole — articule chaque mot"},
+        {c:"ai",t:"Titanic : affiche les 5 premières lignes avec pandas · analyse le taux de survie par genre"},
+        {c:"lead",t:"Talk Like TED Chap. 2 · Identifie 1 leader politique africain que tu admires — pourquoi ?"},
+        {c:"fin",t:"Bilan semaine 2 : budget respecté ? Qu'est-ce qui a dérapé ?"},
+      ]},
+    ]},
+    {w:"8–14 juin",days:[
+      {n:"Lun 8",tasks:[
+        {c:"sport",t:"Course : 4 km — première fois que tu atteins 4 km. Peu importe le temps. Célèbre ça."},
+        {c:"es",t:"Language Transfer Leçon 11 · Écris 5 phrases décrivant ta journée en espagnol sans aide"},
+        {c:"ai",t:"Titanic : EDA complète — taux survie par classe, âge, sexe. Visualise avec matplotlib"},
+        {c:"lead",t:"Maxwell '21 Laws' Loi 1 'Law of the Lid' + Loi 2 'Law of Influence'"},
+        {c:"fin",t:"Bilan mensuel mai : calcule ce que tu as vraiment dépensé vs prévu"},
+      ]},
+      {n:"Mar 9",tasks:[
+        {c:"sport",t:"💪 RENFORCEMENT S3 : 3×(12 pompes · 16 squats · 25 sec planche · 12 dips · 10 pompes inclinées · 10 relevés de jambes allongé pour abdos)"},
+        {c:"es",t:"Language Transfer Leçon 12 (TERMINÉ !) · Dreaming Spanish 30 min · vidéo intermédiaire"},
+        {c:"ai",t:"Titanic : entraîne Logistic Regression · calcule accuracy · soumets sur Kaggle"},
+        {c:"lead",t:"Pratique : ouvre session, pose une motion fictive, gère point d'ordre — 10 min voix haute"},
+        {c:"fin",t:"Recherche 'no-code AI tools Make.com' — crée compte gratuit, fais un premier workflow"},
+      ]},
+      {n:"Mer 10",tasks:[
+        {c:"sport",t:"Course : 4 km — mesure ton temps. C'est ta baseline. Note-le dans le journal."},
+        {c:"es",t:"Commence SpanishPod101 YouTube série 'Absolute Beginner S1' — 3 épisodes"},
+        {c:"ai",t:"HackerRank : 3 ex. pandas et numpy"},
+        {c:"lead",t:"Prépare ordre du jour fictif complet pour une session SUP (5 points)"},
+        {c:"fin",t:"Apprends : 'What is EcoCash API' — note comment ça pourrait servir pour un projet app"},
+      ]},
+      {n:"Jeu 11",tasks:[
+        {c:"sport",t:"💪 RENFORCEMENT S3 (même que mardi)"},
+        {c:"es",t:"Anki : 10 nouveaux mots (transports, campus) · Écris 3 phrases sans aide"},
+        {c:"ai",t:"Google Colab : crée un notebook propre, documente ton analyse Titanic"},
+        {c:"lead",t:"Maxwell Lois 3–4 'Law of Process' + 'Law of Navigation'"},
+        {c:"fin",t:"Identifie une compétence monétisable : prompt engineering, data cleaning, ou chatbot"},
+      ]},
+      {n:"Ven 12",tasks:[
+        {c:"sport",t:"Course : 4 km — fais-le en moins de temps que mercredi. Progression mesurée."},
+        {c:"es",t:"Dreaming Spanish 30 min · Essaie de regarder 5 min sans sous-titres"},
+        {c:"ai",t:"Rédige un résumé de ce que tu as appris en ML ce mois — 1 page dans ton journal"},
+        {c:"lead",t:"Bilan leadership semaine : quels articles te semblent encore flous ?"},
+        {c:"fin",t:"Bilan semaine 3 + objectifs semaine 4"},
+      ]},
+    ]},
+    {w:"15–30 juin",days:[
+      {n:"Résumé semaines 3–4",tasks:[
+        {c:"sport",t:"Course : monte à 5 km en fin de mois. Lun/Mer/Ven systématiquement."},
+        {c:"es",t:"HelloTalk : crée ton profil · Envoie 1 message à un natif · Première conversation"},
+        {c:"ai",t:"Commence mini-projet : chatbot simple Python (input→réponse conditionnelle)"},
+        {c:"lead",t:"Prépare ton discours d'ouverture officiel de 3 min. Mémorise-le. Pratique chaque matin."},
+        {c:"fin",t:"LinkedIn : crée ou améliore ton profil. GitHub : 1 repo public avec projet documenté."},
+      ]},
+    ]}
+  ]},
+  {id:2,label:"Juil",short:"Jul",dates:"1–31 juillet 2026",theme:"Intensité + Jalons visibles",
+   obj:["Course : 5 km continus · temps en dessous de 35 min","Espagnol : 2 conversations HelloTalk/semaine","IA : projet sur GitHub avec README","Maxwell terminé · Robert's Rules maîtrisé"],
+   weeks:[
+    {w:"1–15 juillet",days:[
+      {n:"Lun 1",tasks:[
+        {c:"sport",t:"Course : 5 km — premier 5K. Rythme lent mais complet. Note ton temps."},
+        {c:"es",t:"SpanishPod101 intermédiaire + conversation HelloTalk 15 min"},
+        {c:"ai",t:"Kaggle 'House Prices' : commence, explore dataset, feature engineering"},
+        {c:"lead",t:"Prépare fiche de procédure : 5 situations les plus communes en session SUP"},
+        {c:"fin",t:"Bilan mi-parcours : finances, compétences, objectifs atteints"},
+      ]},
+      {n:"Suite S5–S6",tasks:[
+        {c:"sport",t:"Course : 5 km chaque lundi/mercredi/vendredi · Renforcement : 4 séries · Renforcement D"},
+        {c:"es",t:"Netflix 'Club de Cuervos' S1 — sous-titres espagnols · Conversation 2×/semaine"},
+        {c:"ai",t:"GitHub : 2 projets documentés (Titanic + Chatbot) · Commence portfolio web GitHub Pages"},
+        {c:"lead",t:"Simule session complète 20 min seul · Maxwell lois 13–14 · Robert's Rules terminé"},
+        {c:"fin",t:"Offre de service : 'AI Data Cleaning — 1 dataset' · Contacte 1 client potentiel"},
+      ]},
+    ]},
+    {w:"15–31 juillet",days:[
+      {n:"Semaines 7–8",tasks:[
+        {c:"sport",t:"Course : vise 5 km en moins de 33 min · Renforcement : niveau E (20 pompes, 4 séries)"},
+        {c:"es",t:"Objectif fin juillet : avoir eu 8+ conversations ce mois · Film espagnol sans sous-titres 10 min"},
+        {c:"ai",t:"Finalise 1 projet sur GitHub · Rédige post LinkedIn sur ce que tu as appris cet été"},
+        {c:"lead",t:"Relis constitution entière 1 fois · Prépare dossier 'Mon mandat de Speaker'"},
+        {c:"fin",t:"Bilan juillet · Budget · Économies · Compétence monétisable développée"},
+      ]},
+    ]}
+  ]},
+  {id:3,label:"Août",short:"Aoû",dates:"1–18 août 2026",theme:"Consolidation → Rentrée",
+   obj:["Rentrée possible le 11 ou 18 août","Prépare 1ère session SUP officielle","Révise syllabus des modules à venir","Sport : adapte pour les cours (6h30)","Espagnol : maintien 30 min/jour"],
+   weeks:[
+    {w:"1–10 août",days:[
+      {n:"Tous les jours",tasks:[
+        {c:"lead",t:"Rédige et mémorise ton discours d'ouverture de 1ère session SUP officielle (voir onglet SUP)"},
+        {c:"ai",t:"Révise prérequis modules IA du semestre · Identifie 3 points faibles à combler"},
+        {c:"es",t:"Objectif : tenir 10 min de conversation fluide sur un sujet que tu aimes"},
+        {c:"sport",t:"Adapte : sport 6h30–7h15 · 3×course + 3×renforcement/semaine · non négociable"},
+        {c:"fin",t:"Budget semestre finalisé · Système de suivi hebdomadaire prêt"},
+      ]},
+    ]},
+    {w:"Rentrée 11–18 août",days:[
+      {n:"Rentrée",tasks:[
+        {c:"lead",t:"1ère session SUP : tu connais les articles, tu connais la procédure. Sois calme et précis."},
+        {c:"sport",t:"6h30 réveil · 45 min sport · douche · cours. Ce rythme a été testé pendant 10 semaines."},
+        {c:"es",t:"30 min espagnol le matin ou le soir — ne sacrifie pas pour les cours"},
+        {c:"ai",t:"Les cours semblent plus faciles — tu as la base. Applique ce que tu as appris."},
+        {c:"fin",t:"Budget semestre actif — suivi hebdomadaire chaque dimanche"},
+      ]},
+    ]}
+  ]},
+  {id:4,label:"Sep",short:"Sep",dates:"Septembre 2026",theme:"Semestre · Maintenir la discipline",
+   obj:["Maintenir routine matinale (sport + espagnol)","SUP : sessions régulières, procédures maîtrisées","IA : applique aux cours · note les connexions","Espagnol : 30 min/jour minimum · conversations hebdo"],
+   weeks:[
+    {w:"Tout le mois",days:[
+      {n:"Routine semestre",tasks:[
+        {c:"sport",t:"3×course (5 km) + 3×renforcement/semaine · 6h30 systématiquement avant les cours"},
+        {c:"es",t:"30 min/jour : 15 min étude active + 15 min immersion passive (podcast/série)"},
+        {c:"ai",t:"Cours + 1h de projet personnel/semaine pour ne pas perdre le rythme de construction"},
+        {c:"lead",t:"SUP : 2 sessions/semestre minimum · Applique les procédures que tu as apprises"},
+        {c:"fin",t:"Bilan financier chaque dimanche · Tu ne dépenses que selon le budget"},
+      ]},
+    ]}
+  ]},
+  {id:5,label:"Oct",short:"Oct",dates:"Octobre 2026",theme:"Mi-semestre · Évaluation",
+   obj:["Mi-semestre : bilan académique","Espagnol : conversation de 15 min possible ?","Sport : les 5 km sont normaux maintenant","Leadership : bilan de tes premières sessions SUP"],
+   weeks:[
+    {w:"Tout le mois",days:[
+      {n:"Focus octobre",tasks:[
+        {c:"ai",t:"Mi-semestre : révision intensive · utilise tes notes organisées · vise CGPA > 3.7"},
+        {c:"es",t:"Objectif mi-octobre : tenir 15 min de conversation fluide · Conversation 3×/semaine"},
+        {c:"sport",t:"Maintien · Si pression académique : descends à 4×/semaine mais ne supprime pas"},
+        {c:"lead",t:"Bilan de tes sessions SUP : qu'est-ce qui a bien marché ? Qu'est-ce que tu améliores ?"},
+        {c:"fin",t:"Bilan financier mi-semestre · Encore des économies ? Compétence monétisée ?"},
+      ]},
+    ]}
+  ]},
+  {id:6,label:"Nov",short:"Nov",dates:"Novembre 2026",theme:"Examens en approche · Garder le cap",
+   obj:["Préparer les examens sans sacrifier les habitudes","Espagnol : même 15 min/jour maintient le niveau","Sport 2×/semaine minimum · le cerveau en a besoin","Finalise ton mandat Speaker ce semestre"],
+   weeks:[
+    {w:"Tout le mois",days:[
+      {n:"Focus novembre",tasks:[
+        {c:"ai",t:"Révision examens · utilise des flashcards · techniques de mémorisation active"},
+        {c:"es",t:"Minimum 15 min/jour · ne coupe pas complètement — tu perdrais 2 mois de progrès"},
+        {c:"sport",t:"Minimum 2×/semaine · les jours de révision intense, 20 min de marche au moins"},
+        {c:"lead",t:"Finalise dossier de fin de mandat · prépare rapport à présenter au SUP"},
+        {c:"fin",t:"Pas de dépenses non-essentielles ce mois — focus total sur les examens"},
+      ]},
+    ]}
+  ]},
+  {id:7,label:"Déc",short:"Déc",dates:"Décembre 2026",theme:"Bilan · Vision 2027",
+   obj:["Examens de fin de semestre","Bilan complet de l'année","Espagnol : où en es-tu par rapport à l'objectif ?","Prépare le plan 2027 (master, carrière, continuation)"],
+   weeks:[
+    {w:"Tout le mois",days:[
+      {n:"Décembre — Bilan",tasks:[
+        {c:"ai",t:"Examens · après : bilan de ce que tu sais faire en IA vs janvier 2026"},
+        {c:"es",t:"As-tu tenu une conversation fluide ? Si oui : objectif atteint. Planifie 2027."},
+        {c:"sport",t:"Bilan corps : tu es à 6 mois de sport régulier. Comment tu te sens ?"},
+        {c:"lead",t:"Bilan Speaker : qu'est-ce que ce rôle t'a appris ? Comment ça renforce ton CV ?"},
+        {c:"fin",t:"Plan 2027 : master applications, compétences à développer, budget épargne"},
+      ]},
+    ]}
+  ]},
+];
+
+let planIdx=0;
+function buildPlanTabs(){
+  const el=document.getElementById('plan-tabs');
+  if(el.children.length>0)return;
+  PLAN_MONTHS.forEach((m,i)=>{
+    const b=document.createElement('button');
+    b.className='itab'+(i===0?' on':'');
+    b.textContent=m.label;
+    b.onclick=()=>renderPlan(i);
+    el.appendChild(b);
+  });
+}
+function renderPlan(idx){
+  planIdx=idx;
+  document.querySelectorAll('#plan-tabs .itab').forEach((t,i)=>t.classList.toggle('on',i===idx));
+  const m=PLAN_MONTHS[idx];
+  const catColor={sport:'var(--green)',es:'var(--blue)',ai:'var(--gold)',lead:'var(--purple)',fin:'var(--orange)'};
+  const catLabel={sport:'Sport',es:'Espagnol',ai:'IA / Carrière',lead:'Leadership',fin:'Finances'};
+  let html=`<div class="month-badge">
+    <div class="mb-date">${m.dates}</div>
+    <div class="mb-title">${m.label} — ${m.theme}</div>
+  </div>
+  <div class="sl">Objectifs du mois</div>
+  <div class="card"><div style="padding:10px 14px;">`;
+  m.obj.forEach(o=>html+=`<div style="font-size:13px;color:var(--text2);padding:5px 0;
+    border-bottom:1px solid var(--bg4);line-height:1.4;">
+    <span style="color:var(--gold);margin-right:6px;font-family:'Courier New',monospace;">◆</span>${o}</div>`);
+  html+=`</div></div>`;
+
+  m.weeks.forEach(wk=>{
+    html+=`<div class="sl">${wk.w}</div>`;
+    wk.days.forEach(day=>{
+      html+=`<div class="card"><div style="padding:10px 14px 4px;">
+        <div style="font-size:10px;color:var(--text3);font-family:'Courier New',monospace;
+          letter-spacing:.12em;margin-bottom:8px;">${day.n}</div>`;
+      day.tasks.forEach(task=>{
+        html+=`<div style="display:flex;gap:8px;padding:7px 0;border-top:1px solid var(--bg4);
+          align-items:flex-start;">
+          <div style="width:5px;height:5px;border-radius:50%;background:${catColor[task.c]};
+            flex-shrink:0;margin-top:5px;"></div>
+          <div>
+            <div style="font-size:9px;color:${catColor[task.c]};font-family:'Courier New',monospace;
+              letter-spacing:.12em;">${catLabel[task.c]}</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.5;margin-top:2px;">${task.t}</div>
+          </div></div>`;
+      });
+      html+=`</div></div>`;
+    });
+  });
+  document.getElementById('plan-body').innerHTML=html;
+}
+
+// ─── SPORT DATA (adapted for 100kg 1m98) ────────────────────────────────────────────
+const SPORT_DATA=[
+  {label:"Mois 1 — Fondations",dates:"Mai–Juin",
+   intro:"À 100 kg et 1m98, tes priorités esthétiques sont : élargir les épaules et le dos pour créer un V-shape, renforcer les fessiers et les cuisses pour équilibrer la silhouette, et perdre du poids en douceur avec la course. Le programme sans matériel est conçu pour ça.",
+   course:[
+     {wk:"S1 (27 mai)",dist:"2 km",time:"~18–22 min",detail:"Alterne 3 min jogging / 2 min marche. Rythme = tu peux parler en phrases courtes. Si essoufflé au point de ne pas parler : ralentis."},
+     {wk:"S2 (3 juin)",dist:"3 km",time:"~25–30 min",detail:"Essaie 15 min de jogging continu. Si tu dois marcher, marche 90 sec max et reprends. Note le nombre de pauses."},
+     {wk:"S3 (10 juin)",dist:"3,5–4 km",time:"~28–35 min",detail:"Vise 0 pause. Rythme très lent si nécessaire. La constance prime sur la vitesse."},
+     {wk:"S4 (17 juin)",dist:"4 km",time:"<32 min",detail:"Note ton temps. C'est ta baseline. Chaque semaine tu bats ce chiffre."},
+   ],
+   renf:[
+     {wk:"S1–S2",title:"Programme A — Débutant",sets:"3 séries",rest:"Repos 90 sec entre séries",exos:[
+       {n:"Pompes mains larges",r:"8 reps",why:"Pectoraux externes + avant bras — base de la largeur du torse"},
+       {n:"Pompes mains normales",r:"6 reps",why:"Pectoraux + triceps"},
+       {n:"Squats pieds à la largeur épaules",r:"12 reps",why:"Cuisses + fessiers — muscles les plus gros = plus de calories brûlées"},
+       {n:"Planche sur les coudes",r:"15 sec",why:"Gainage central — fondation de tout le reste"},
+       {n:"Dips sur chaise (mains derrière, corps incliné)",r:"10 reps",why:"Triceps + épaules avant"},
+     ]},
+   ]},
+  {label:"Mois 2 — Progression",dates:"Juin–Juillet",
+   intro:"Tu as maintenant une base. Le corps s'est adapté. Il faut augmenter le volume et ajouter des exercices pour le dos et les épaules — les deux zones clés pour ta morphologie.",
+   course:[
+     {wk:"S5–S6",dist:"4,5–5 km",time:"~35–40 min",detail:"Commence à mesurer. Nike Run Club gratuit sur iPhone te donne distance + rythme. Objectif 5 km."},
+     {wk:"S7–S8",dist:"5 km",time:"Vise <35 min",detail:"5 km en 35 min = 7 min/km. C'est très accessible. Cours avec de la musique ou un podcast espagnol."},
+   ],
+   renf:[
+     {wk:"S3–S4",title:"Programme B — Dos et épaules",sets:"4 séries",rest:"Repos 75 sec",exos:[
+       {n:"Pompes explosives (décollage mains)",r:"8 reps",why:"Force explosive + pectoraux supérieurs"},
+       {n:"Pompes avec prise extra-large",r:"12 reps",why:"Largeur dos simulée + pecs externes"},
+       {n:"Relevés de jambes allongé au sol",r:"12 reps",why:"Abdos inférieurs — important pour maintien du dos"},
+       {n:"Planche dynamique (monter en pompe depuis planche)",r:"8 reps",why:"Épaules + triceps + core"},
+       {n:"Superman (allongé ventre, lever bras+jambes 2 sec)",r:"12 reps",why:"Grand dorsal + lombaires — CLEF pour la silhouette dos"},
+       {n:"Dips sur chaise, corps droit (jambes tendues devant)",r:"12 reps",why:"Triceps longs + épaules — plus difficile"},
+       {n:"Squats sautés",r:"10 reps",why:"Cardio + fessiers + cuisses"},
+     ]},
+   ]},
+  {label:"Mois 3 — Maintien semestre",dates:"Août–Déc",
+   intro:"Avec les cours, le but est de maintenir ce que tu as construit. Sport 3×/semaine non négociable. Le corps que tu as développé dure si tu le nourris — même à intensité réduite.",
+   course:[
+     {wk:"S9+",dist:"5–6 km",time:"3× par semaine",detail:"Cours le matin avant les cours. La course le matin améliore la concentration pendant les cours de 20 à 30%."},
+   ],
+   renf:[
+     {wk:"Programme maintien",title:"Programme C — Volume complet",sets:"4 séries",rest:"Repos 60 sec",exos:[
+       {n:"Pompes larges explosives",r:"15 reps",why:"Pectoraux + force explosive"},
+       {n:"Superman",r:"15 reps",why:"Grand dorsal · PRIORITÉ HAUTE pour ton dos"},
+       {n:"Planche dynamique",r:"10 reps",why:"Core + épaules"},
+       {n:"Relevés de jambes",r:"15 reps",why:"Abdos inférieurs"},
+       {n:"Squats sautés",r:"12 reps",why:"Fessiers + cuisses + cardio"},
+       {n:"Dips jambes tendues",r:"14 reps",why:"Triceps + épaules avant"},
+       {n:"Pike push-up (corps en V inversé, descend la tête)",r:"10 reps",why:"MEILLEUR exercice pour épaules sans matériel · crée le V-shape"},
+     ]},
+   ]},
+];
+
+let sportIdx=0;
+function buildSportTabs(){
+  const el=document.getElementById('sport-tabs');
+  if(el.children.length>0)return;
+  SPORT_DATA.forEach((m,i)=>{
+    const b=document.createElement('button');
+    b.className='itab'+(i===0?' on':'');
+    b.textContent=m.label.split(' — ')[0]+(i===2?' S':'');
+    b.onclick=()=>renderSport(i);
+    el.appendChild(b);
+  });
+}
+function renderSport(idx){
+  sportIdx=idx;
+  document.querySelectorAll('#sport-tabs .itab').forEach((t,i)=>t.classList.toggle('on',i===idx));
+  const m=SPORT_DATA[idx];
+  let html=`<div class="month-badge">
+    <div class="mb-date">${m.dates}</div>
+    <div class="mb-title">${m.label}</div>
+    <div class="mb-theme">${m.intro}</div>
+  </div>`;
+
+  // Course
+  if(m.course.length>0){
+    html+=`<div class="sl" style="color:var(--green);">🏃 Programme Course · Lun / Mer / Ven</div>
+    <div class="card">`;
+    m.course.forEach(c=>{
+      html+=`<div class="sport-row">
+        <div class="sport-row-hdr" style="color:var(--green);">${c.wk} — ${c.dist} · ${c.time}</div>
+        <div class="sport-detail">${c.detail}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  // Renforcement
+  m.renf.forEach(r=>{
+    html+=`<div class="sl" style="color:var(--purple);">💪 ${r.title} · Mar / Jeu / Sam</div>
+    <div class="card"><div style="padding:10px 14px 4px;">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:10px;font-family:'Courier New',monospace;">
+        ${r.sets} · ${r.rest}</div>`;
+    r.exos.forEach((e,i)=>{
+      html+=`<div style="padding:9px 0;border-top:1px solid var(--bg4);">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;">
+          <div style="font-size:13px;color:var(--text);">${i+1}. ${e.n}</div>
+          <div style="font-size:12px;color:var(--purple);font-family:'Courier New',monospace;">${e.r}</div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);">${e.why}</div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  });
+
+  // Tip
+  html+=`<div style="margin:4px 16px 16px;padding:10px 12px;border-radius:10px;
+    background:#090f09;border:1px solid #182018;">
+    <div style="font-size:9px;color:var(--green);font-family:'Courier New',monospace;
+      letter-spacing:.18em;margin-bottom:4px;">ALIMENTATION (sans régime)</div>
+    <div style="font-size:12px;color:var(--text3);line-height:1.75;">
+      À 100 kg, tu n'as pas besoin de régime strict. Juste 3 règles :<br>
+      1. Eau avant chaque repas (réduit la quantité naturellement)<br>
+      2. Protéines à chaque repas (œufs, légumineuses, poisson si disponible)<br>
+      3. Supprimer les boissons sucrées — c'est tout. Ça seul peut te faire perdre 3–4 kg en 2 mois.
+    </div>
+  </div>`;
+
+  document.getElementById('sport-body').innerHTML=html;
+}
+
+// ─── SUP DATA ─────────────────────────────────────────────────────────────────
+const SUP_TABS_DATA=[
+  {id:0,label:"Ton rôle"},
+  {id:1,label:"Les meetings"},
+  {id:2,label:"Parler · Scripts"},
+  {id:3,label:"Pouvoirs"},
+  {id:4,label:"Finances"},
+  {id:5,label:"Discipline"},
+  {id:6,label:"Scénarios"},
+  {id:7,label:"Chiffres"},
+];
+
+let supIdx=0;
+function buildSupTabs(){
+  const el=document.getElementById('sup-tabs');
+  if(el.children.length>0)return;
+  SUP_TABS_DATA.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='itab'+(i===0?' on':'');
+    b.textContent=t.label;
+    b.onclick=()=>renderSup(i);
+    el.appendChild(b);
+  });
+}
+
+function renderSup(idx){
+  supIdx=idx;
+  document.querySelectorAll('#sup-tabs .itab').forEach((t,i)=>t.classList.toggle('on',i===idx));
+  let html='';
+
+  if(idx===0){ // TON RÔLE
+    html=mkCard('⚑ Art. 13.3.2 · Qui préside les meetings du SUP ?',
+      '"The Speaker of Parliament shall chair all meetings of the SUP failing which the deputy failing which the secretary failing which the SUP shall elect one among themselves to chair the meeting."',
+      `<strong>Tu es le président de séance de chaque meeting du Parlement.</strong> Cela veut dire concrètement :<br><br>
+— Tu donnes la parole. Aucun membre ne parle sans que tu lui aies dit "The Chair recognizes..."<br>
+— Tu maintiens l'ordre. Si quelqu'un parle sans permission, tu rappelles à l'ordre.<br>
+— Tu gères le temps de parole. Tu peux limiter chaque intervenant à 3 min si nécessaire.<br>
+— Tu prends des décisions de procédure instantanées. Si quelqu'un soulève un point d'ordre, tu dois décider immédiatement.<br><br>
+<b>Ordre de succession :</b> Toi → Deputy Speaker → Secretary → membre élu séance tenante.`,
+      `Certains Speakers laissent la session démarrer informellement "pour ne pas paraître autoritaires". C'est une erreur fatale. Dès la première session, installe le ton : formel, juste, neutre. Si tu cèdes une fois, tu cèdes pour toujours.`);
+
+    html+=mkCard('Art. 13.3.6 · Le Speaker vote-t-il ?',
+      '"The Speaker shall have the casting vote only."',
+      `<strong>Non. Tu ne votes pas.</strong><br><br>
+Le "casting vote" = vote de départage uniquement si égalité parfaite (ex. 9 contre 9 sur 18 votants).<br><br>
+<b>Pourquoi c'est ta force :</b> Ta légitimité vient de ta neutralité totale. Si tu votes sur les questions de fond, tu prends parti — tu perds l'autorité morale de gérer les débats équitablement. Le Parlement te fait confiance parce que tu ne joues pas.`,
+      `Des membres vont essayer de te faire voter pour leur camp. Réponse standard : <em>"The Speaker may only exercise a casting vote in the event of a tie, as provided by Article 13.3.6. This is not such a situation."</em> Cite toujours l'article.`);
+
+    html+=mkCard('Art. 13.3.3 + 13.3.4 · Qui convoque ? Combien de meetings ?',
+      '"Subsequent meetings shall be called by the Speaker on his own or on the written request of a third of the Parliament members. The Parliament shall be obliged to meet at least twice per Semester."',
+      `<strong>Tu peux convoquer quand tu veux.</strong> Mais si 1/3 des membres (7 sur 19) te soumettent une demande écrite, tu <em>dois</em> convoquer.<br><br>
+<b>Obligation minimum :</b> 2 meetings par semestre. C'est le plancher — en pratique, tu en tiendras plus selon les affaires.<br><br>
+<b>Délai de convocation :</b> La constitution ne fixe pas de délai minimum pour les meetings SUP normaux, mais la pratique courante (et respectueuse) est 48h à 72h de préavis avec ordre du jour distribué.`,
+      `Si tu ignores une demande écrite d'1/3 des membres, tu violes la constitution. Des membres peuvent utiliser ça contre toi. Traite toujours les demandes dans les 24 heures.`);
+  }
+
+  else if(idx===1){ // LES MEETINGS — types détaillés
+    html=`<div style="margin:10px 16px;padding:11px 14px;border-radius:10px;
+      background:#0a0c14;border:1px solid #1a1e2a;margin-bottom:14px;">
+      <div style="font-size:9px;color:var(--purple);font-family:'Courier New',monospace;
+        letter-spacing:.18em;margin-bottom:4px;">GUIDE DES RÉUNIONS · CONSTITUTION AU SU</div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.65;">
+        Il y a 4 types de réunions dans ta constitution. Chacune a des règles différentes.
+        En tant que Speaker, tu dois connaître chacune.
+      </div></div>`;
+
+    const meetings=[
+      {ref:"Art. 9.1",title:"Ordinary General Meeting (OGM)",who:"Convoqué par le Président du SRC",notice:"5 jours ouvrables",quorum:"1/3 des membres enregistrés",freq:"1 fois par semestre, max 8 semaines après ouverture",agenda:[
+        "Présentation et approbation du budget semestriel par le SRC",
+        "Rapport financier intérimaire du SRC",
+        "Rapports des présidents des comités SRC et SUP",
+        "Motions placées à l'agenda sur demande écrite au Président (avec ton approbation comme Speaker — Art. 9.1.3.4)",
+      ],
+      explain:"C'est la réunion principale de tous les étudiants. Le Président du SRC préside, pas toi. Mais en tant que Speaker, tu peux placer des points à l'agenda. C'est un outil politique important : si tu veux qu'un sujet soit discuté publiquement, tu passes par cette voie.",
+      trap:"Si 1/5 des étudiants enregistrés ou la majorité des membres SUP en font la demande écrite, le Président DOIT convoquer l'OGM (Art. 9.1.3.5). Connais ce levier — tu pourrais en avoir besoin."},
+      {ref:"Art. 9.2",title:"Special / Extra-Ordinary General Meeting (EOGM)",who:"Convoqué par le Président du SRC",notice:"24 heures seulement",quorum:"1/3 des membres enregistrés",freq:"À tout moment si nécessaire",agenda:[
+        "UN SEUL SUJET — celui pour lequel la réunion a été convoquée",
+        "Aucun autre point ne peut être discuté",
+      ],
+      explain:"C'est la réunion d'urgence. Elle sert à traiter une crise qui ne peut pas attendre. Par exemple : abus de pouvoir du SRC, irrégularité financière grave, situation qui menace l'Union.<br><br>Important : l'agenda est fermé. Si quelqu'un essaie d'ajouter d'autres points en séance, tu as l'obligation de les écarter (même si c'est un OGM — c'est le Président qui décide, pas toi ici).",
+      trap:"Une EOGM convoquée sans respecter les 24h de préavis est inconstitutionnelle. Si tu es informé d'une telle convocation irrégulière, soulève le point immédiatement."},
+      {ref:"Art. 9.3",title:"Annual General Meeting (AGM)",who:"Convoqué par le Président du SRC",notice:"5 jours ouvrables",quorum:"1/3 des membres enregistrés",freq:"Avant le 7 avril ou 6e semaine après fin d'année financière",agenda:[
+        "Rapport annuel du Président du SRC",
+        "Rapport financier annuel du SRC",
+        "Bilan des accomplissements et échecs du SRC",
+        "Budget annuel",
+        "Motions approuvées par la majorité des membres SUP",
+      ],
+      explain:"C'est le bilan de l'année. C'est aussi là que le SRC peut être mis en cause devant toute l'Union. En tant que Speaker, c'est ta plateforme pour présenter le bilan du Parlement.",
+      trap:""},
+      {ref:"Art. 13.3",title:"SUP Meeting (meeting du Parlement)",who:"Convoqué par le Speaker (toi)",notice:"Pas de minimum fixé · pratique : 48–72h",quorum:"Simple majorité des membres (10 sur 19)",freq:"Minimum 2 fois par semestre",agenda:[
+        "Points soumis par les membres du Parlement",
+        "Rapports du SRC (budget, finances, opérations)",
+        "Motions politiques",
+        "Affaires disciplinaires",
+        "Toute autre affaire que tu juges nécessaire",
+      ],
+      explain:"C'est TON meeting. Tu le contrôles. Tu prépares l'ordre du jour, tu présides, tu gères le vote.<br><br>Le Président du SRC est membre du SUP et a le droit de voter — mais c'est toi le président de séance.<br><br>La majorité simple suffit pour toutes les résolutions (Art. 13.3.5).",
+      trap:"Ne laisse pas le Président du SRC dominer la salle même s'il est plus expérimenté. Tu es le Speaker — c'est toi qui donnes la parole, même au Président."},
+    ];
+
+    meetings.forEach(m=>{
+      html+=`<div class="card">
+        <div class="acc-hdr" onclick="this.parentElement.classList.toggle('op')">
+          <div class="acc-hdr-l">
+            <div class="acc-eyebrow" style="color:var(--purple);">${m.ref}</div>
+            <div class="acc-title">${m.title}</div>
+            <div style="font-size:10px;color:var(--text3);font-family:'Courier New',monospace;margin-top:3px;">
+              Préavis : ${m.notice} · Quorum : ${m.quorum}</div>
+          </div>
+          <div class="acc-arrow">▾</div>
+        </div>
+        <div class="acc-body">
+          <div style="padding:10px 14px 6px;">
+            <div style="font-size:9px;color:var(--text3);font-family:'Courier New',monospace;
+              letter-spacing:.15em;margin-bottom:6px;">AGENDA TYPIQUE</div>`;
+      m.agenda.forEach(a=>html+=`<div style="font-size:12px;color:var(--text2);padding:3px 0;
+        line-height:1.4;">· ${a}</div>`);
+      html+=`</div>
+          <div class="div"></div>
+          <div class="explain" style="padding-top:10px;">${m.explain}</div>
+          ${m.trap?`<div class="trap"><div class="trap-lbl">⚠ ATTENTION</div>${m.trap}</div>`:''}
+        </div></div>`;
+    });
+  }
+
+  else if(idx===2){ // PARLER · SCRIPTS
+    html=`<div style="margin:10px 16px;padding:11px 14px;border-radius:10px;
+      background:#0a0c14;border:1px solid #1a1e2a;margin-bottom:14px;">
+      <div style="font-size:9px;color:var(--blue);font-family:'Courier New',monospace;
+        letter-spacing:.18em;margin-bottom:4px;">LANGUAGE DU SPEAKER</div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.65;">
+        Le Speaker ne parle pas comme les autres membres. Il parle à la troisième personne de lui-même ("The Chair"), 
+        en anglais formel, avec des formules précises. Voici tout ce que tu dois savoir.
+      </div></div>`;
+
+    const scripts=[
+      {title:"Ouverture d'une session SUP",script:`<b>Speaker :</b> "The Student Union Parliament is now in session. I call this meeting to order."<br><br>
+<b>Appel nominal :</b> "The Secretary will call the roll." [Le secrétaire lit les noms, les membres répondent "Present".]<br><br>
+<b>Vérification du quorum :</b> "The Chair notes that [X] members are present. A quorum is [10] members. 
+${`Quorum is established / We do not have quorum.`}"<br><br>
+<b>Adoption de l'ordre du jour :</b> "The agenda has been circulated. Are there any additions or amendments to the agenda?" [Pause] "Hearing none, the agenda stands as circulated. So ordered."`,
+      tip:"Apprends l'ouverture par cœur. Les 3 premières minutes d'une session donnent le ton de tout le reste."},
+
+      {title:"Donner la parole",script:`"The Chair recognizes [Nom/Titre] for [durée si limitée]."<br><br>
+"The chair recognizes the Member from [Constituency/Country]."<br><br>
+Si quelqu'un parle sans permission : <b>"The member is out of order. Please be seated. The Chair has not recognized the member."</b><br><br>
+Si tout le monde parle : <b>"The Parliament will come to order. One member speaks at a time. The Chair recognizes..."</b>`,
+      tip:"Ne crie jamais. Plus tu restes calme face au chaos, plus tu projettes d'autorité."},
+
+      {title:"Gérer une motion",script:`<b>Un membre propose :</b> "Mr/Madam Speaker, I move that [la motion]."<br><br>
+<b>Appel au secondement :</b> "Is there a seconder for this motion?" [Si oui] "The motion is seconded."<br><br>
+<b>Ouverture du débat :</b> "The motion before the Parliament is: [reformule la motion]. The floor is open for debate."<br><br>
+<b>Fermeture du débat :</b> "Are there any further contributions? ... Hearing none, the debate is closed. We will now vote on the motion."<br><br>
+<b>Vote :</b> "All those in favour? [pause] All those against? [pause] Abstentions? [pause] The motion is carried / defeated by [X] votes to [Y]."`,
+      tip:"Reformule toujours la motion avant le vote pour éviter tout malentendu. C'est toi l'arbitre de ce qui a été voté."},
+
+      {title:"Point d'ordre (Point of Order)",script:`Un membre : "Point of Order, Mr Speaker!"<br><br>
+<b>Toi :</b> "State your point of order."<br><br>
+[Le membre explique la violation de procédure]<br><br>
+<b>Toi :</b> "The Chair rules that [this is / this is not] a valid point of order, because [Article X states...]."<br><br>
+Si tu as besoin de réfléchir : <b>"The Chair will consider this point and rule shortly. The Parliament will stand at ease."</b>`,
+      tip:"Tu n'as jamais l'obligation de décider en 5 secondes. 'The Chair will take this under consideration' est une réponse valide."},
+
+      {title:"Clôture de session",script:`"The business before the Parliament has been concluded."<br><br>
+"Before we adjourn, the Secretary will read the decisions taken today." [Le secrétaire lit]<br><br>
+"Are there corrections or additions to the record? ... Hearing none, the record is approved."<br><br>
+"The next meeting of the Parliament will be communicated in due course."<br><br>
+<b>"This session of the Student Union Parliament is hereby adjourned."</b>`,
+      tip:"Ne laisse jamais une session se terminer sans lire un résumé des décisions. C'est la mémoire institutionnelle du Parlement."},
+
+      {title:"Ton premier meeting : plan complet",script:`<b>Avant le meeting :</b><br>
+— Prépare l'ordre du jour 48h à l'avance, distribue à tous<br>
+— Prépare ta fiche : liste des 19 membres avec noms + circonscriptions<br>
+— Prépare les articles clés sur ton téléphone (cette app !)<br><br>
+<b>La veille :</b> Répète l'ouverture 3 fois à voix haute dans ta chambre<br><br>
+<b>Le jour :</b> Arrive 10 min avant. Sois déjà assis quand les membres arrivent.<br><br>
+<b>Ouverture :</b> [Script ouverture] → Appel nominal → Quorum → Adoption agenda<br>
+→ Point par point → Débat → Vote → Résumé → Clôture<br><br>
+<b>Temps total typique pour 1er meeting :</b> 45 min à 1h30`,
+      tip:"Si tu commets une erreur de procédure, dis : 'The Chair withdraws its previous ruling and substitutes the following...' Tu peux te corriger. La confiance vient de la correction, pas de la perfection."},
+    ];
+
+    scripts.forEach(s=>{
+      html+=`<div class="card">
+        <div class="acc-hdr" onclick="this.parentElement.classList.toggle('op')">
+          <div class="acc-hdr-l"><div class="acc-eyebrow" style="color:var(--blue);">Script</div>
+            <div class="acc-title">${s.title}</div></div>
+          <div class="acc-arrow">▾</div>
+        </div>
+        <div class="acc-body">
+          <div class="script">${s.script}</div>
+          <div class="tip"><div class="tip-lbl">◆ CONSEIL</div>${s.tip}</div>
+        </div></div>`;
+    });
+  }
+
+  else if(idx===3){ // POUVOIRS
+    html=mkCard('Art. 13.2 · Les 11 pouvoirs du SUP',
+      '"The Student Union Parliament shall have the powers to: (a) Elect the Speaker... (b) Make all policy decisions... (c) Periodic review of SRC... (d) Investigate financial irregularities... (e) Approve budget amendments... (f) Constitutional amendments... (g) Receive constituency issues... (h) Supervise the SRC... (i) Recommend disciplinary action... (j) Uphold the Constitution... (k) Any other policy issue."',
+      `<b>Comprendre la différence SRC vs SUP :</b><br><br>
+Le SRC est l'<strong>exécutif</strong> — il gère le quotidien (admin, dépenses, événements, relations avec l'université).<br>
+Le SUP est le <strong>législatif</strong> — il fixe la politique, contrôle l'exécutif, et protège la constitution.<br><br>
+<b>Tes 3 leviers les plus puissants :</b><br>
+1. <strong>Art. 13.2.c</strong> : Révision périodique des rapports du SRC — tu peux exiger des comptes à tout moment<br>
+2. <strong>Art. 13.2.d</strong> : Enquête financière — si tu suspectes une irrégularité, le SUP peut ouvrir une investigation<br>
+3. <strong>Art. 13.2.h</strong> : Supervision de l'exécutif — si le SRC n'implémente pas les décisions du SUP, tu peux agir`,
+      `Le SUP est soumis au General Meeting (Art. 8.5.4). Ne prends jamais une décision majeure sans vérifier qu'elle résisterait à une remise en question en GM.`);
+
+    html+=mkCard('Art. 8.5 · La hiérarchie du pouvoir',
+      '"The hierarchy in ascending order of superiority: 8.5.1 The SRC → 8.5.2 The SUP → 8.5.3 The Electoral Committee (on electoral matters only) → 8.5.4 The Students Union General Meeting."',
+      `<b>Du moins puissant au plus puissant :</b><br>
+1. SRC (exécutif quotidien)<br>
+2. SUP — <em>c'est ton niveau</em> (législatif, contrôle du SRC)<br>
+3. Electoral Committee (souverain sur les élections SEULEMENT — rien d'autre)<br>
+4. General Meeting (souverain absolu sur tout)<br><br>
+<b>Conséquences pratiques :</b><br>
+— Tu peux contester une décision du SRC au SUP<br>
+— On peut contester une décision du SUP au General Meeting<br>
+— PERSONNE ne peut contester l'Electoral Committee sur les élections`,
+      `Erreur commune : croire que le SUP est au sommet. Ce n'est pas le cas. Si une décision est très impopulaire, 1/3 des étudiants peuvent provoquer un GM qui la renverse.`);
+  }
+
+  else if(idx===4){ // FINANCES
+    html=mkCard('Art. 15.1.h · La requisition légale',
+      '"A requisition for funds shall only be valid if it is raised on union official requisition form and signed by the Finance Secretary and three quarters of the members of the SRC and accompanied by an approved budget and a duly certified extract from the minutes."',
+      `<b>Pour qu'une dépense soit légale, il faut TOUS ces éléments :</b><br>
+✓ Formulaire officiel de requisition<br>
+✓ Signature du Finance Secretary<br>
+✓ Signatures de 3/4 des membres SRC<br>
+✓ Budget approuvé correspondant<br>
+✓ Extrait certifié des minutes approuvant cette dépense<br><br>
+Si UN seul élément manque → la dépense est inconstitutionnelle → le Bursar ne devrait pas libérer les fonds (Art. 15.3.2).`,
+      `Dans la réalité, des SRCs peu scrupuleux font signer des formulaires vierges à l'avance ou s'arrangent avec le Bursar. En tant que SUP, tu as le droit d'exiger les originaux de TOUS les documents à tout moment. Utilise ce droit dès le début, pas seulement quand tu suspectes quelque chose.`);
+
+    html+=mkCard('Art. 15.5 · Les revenus du Tech Shop et activités génératrices',
+      '"The Finance Secretary shall see to it that progressively serial numbered SRC dedicated tickets are used for all union fund-raising. Failure to reconcile the proceeds with the tickets issued will result in those responsible appearing before the disciplinary committee."',
+      `<b>C'est là où l'argent disparaît le plus souvent.</b><br><br>
+Le tech shop, les événements, les films, les activités génératrices fonctionnent en cash. Les contrôles sont moins stricts. Les opportunités de "manigances" sont réelles.<br><br>
+<b>Le système légal :</b><br>
+— Tickets numérotés en série pour chaque transaction (Art. 15.5.5)<br>
+— Finance Secretary + membres du Finance Committee présents lors de la collecte (Art. 15.5.3)<br>
+— Tout argent collecté immédiatement déposé sur le compte de l'Union (Art. 15.5.4)<br>
+— Livres de compte accessibles à tout moment au SRC<br><br>
+<b>Ton rôle :</b> Via le Audit Committee du SUP (Art. 13.6), tu peux exiger une réconciliation des tickets à tout moment.`,
+      `Si le Finance Secretary ou un membre du SRC refuse de réconcilier les tickets — c'est une infraction disciplinaire (Art. 15.5.6). Documente tout. Ouvre une investigation formelle.`);
+
+    html+=mkCard('Art. 13.6 · Le Audit & Financial Affairs Committee',
+      '"The Committee shall: (a) review and audit monthly accounts of the SRC... (d) Convey its reports to parliament MONTHLY... (e) Recommend appropriate audit firm."',
+      `<b>C'est ton instrument de contrôle financier.</b><br><br>
+Le Audit Committee a 5 membres du SUP, au moins 2 avec formation comptable. Il reporte directement à toi chaque mois.<br><br>
+<b>Ce qu'il fait chaque mois :</b><br>
+— Vérifie les comptes du SRC et des clubs<br>
+— Compare avec le budget approuvé<br>
+— Signale tout écart au Parlement<br>
+— Peut recommander un audit externe<br><br>
+<b>Si le SRC refuse de coopérer avec le Audit Committee :</b> → Art. 13.2.d s'applique — le SUP peut ouvrir une investigation indépendante.`,
+      ``);
+  }
+
+  else if(idx===5){ // DISCIPLINE
+    html=mkCard('Art. 17.1 · Infractions disciplinaires',
+      '"Disciplinary offences include: (a) Failure to account for union funds... (c) Mal-administration through corruption/fraud... (g) False accusations, defamation, verbal or physical abuse... (h) Acts deliberately calculated to undermine the Union... (p) Fail to comply with any lawful order given by an official of the Union."',
+      `<b>Les infractions qui te concernent le plus en tant que Speaker :</b><br><br>
+<strong>Art. 17.1.a</strong> : Quelqu'un qui ne rend pas compte des fonds → tu peux initier une investigation<br>
+<strong>Art. 17.1.c</strong> : Corruption/fraude → investigation SUP puis disciplinary committee<br>
+<strong>Art. 17.1.g</strong> : Diffamation/abus verbal → si dirigé contre toi ou un membre, tu peux agir<br>
+<strong>Art. 17.1.p</strong> : Refus d'obéir à un ordre légal d'un officiel → si quelqu'un refuse tes décisions de procédure<br><br>
+<b>Processus :</b><br>
+1. Allégation → Legal Affairs Committee du SRC enquête (Art. 17.2)<br>
+2. Si fondé → Disciplinary Committee (Art. 17.3)<br>
+3. Appel → SUP (Art. 17.7) — décision finale`,
+      `En tant que Speaker, tu pourrais être la cible de fausses accusations si tu commences à enquêter sur des irrégularités. Stratégie : documente TOUT. Chaque décision, chaque demande, chaque communication écrite. Ta protection, c'est la traçabilité.`);
+
+    html+=mkCard('Art. 17.5 · Justice naturelle — comment se défendre',
+      '"The accused student shall be: furnished with full opportunity to meet allegations... permitted to present facts or call witnesses... permitted to put questions to witnesses... permitted to be present at all times save deliberation."',
+      `<b>4 droits fondamentaux de l'accusé :</b><br>
+1. Connaître les charges contre lui en détail<br>
+2. Présenter des preuves et des témoins<br>
+3. Interroger les témoins<br>
+4. Être présent sauf pendant la délibération<br><br>
+<b>Représentation :</b> Un autre membre de l'Union seulement — pas d'avocat externe (Art. 17.8).<br><br>
+<b>En tant que Speaker présidant un appel disciplinaire :</b> Tu dois garantir ces droits même pour quelqu'un que tu sais coupable. Sinon la décision peut être contestée et annulée.`,
+      `Ne court-circuite JAMAIS la procédure, même face à quelque chose d'évident. Une sanction prononcée sans procédure équitable est invalide et te met toi-même en cause.`);
+  }
+
+  else if(idx===6){ // SCÉNARIOS
+    const scens=[
+      {tag:"Urgence procédurale",q:"Un membre challenge le quorum en pleine session",steps:[
+        "Stop immédiatement le débat : 'The Chair acknowledges the point of order regarding quorum. The session is temporarily suspended.'",
+        "Fais l'appel nominal immédiatement. Compte les présents.",
+        "Si quorum (10+) : 'Quorum is confirmed. The Parliament will continue. [Reprends le point interrompu.]'",
+        "Si pas de quorum : 'The Parliament is inquorate. The session is adjourned. All business completed prior to this point of order shall stand. A new session will be convened.' — Art. 9.4.4",
+        "Note dans les minutes : heure du challenge, nombre de présents, décision.",
+      ],ref:"Art. 9.4.4"},
+      {tag:"Irrégularité financière",q:"Le SRC refuse de soumettre le rapport financier",steps:[
+        "Envoie une demande écrite formelle au Président du SRC + Finance Secretary. Délai : 48h. Garde une copie.",
+        "Si pas de réponse : convoque une session SUP avec ce point unique à l'ordre du jour.",
+        "Le SUP vote une résolution officielle exigeant le rapport dans les 5 jours suivants.",
+        "Si toujours refus : Art. 13.2.d — le SUP lance une investigation indépendante via le Audit Committee.",
+        "Si fraude confirmée : Art. 17.1.c → disciplinary committee → possible rapport au Bursar (Art. 17.4.8).",
+      ],ref:"Art. 13.2.c/d · 15.1.d · 17.1.c"},
+      {tag:"Procédure parlementaire",q:"Un membre arrive avec une motion non prévue à l'ordre du jour",steps:[
+        "Reçois la motion formellement. Ne la rejette pas d'emblée.",
+        "Demande si le membre veut la soumettre comme 'Any Other Business' en fin de session.",
+        "Pour l'ajouter formellement : 'The Chair will ask the Parliament whether this item should be added to the agenda under Any Other Business.'",
+        "Vote : majorité simple pour accepter l'ajout. Si oui → débat. Si non → demande que la motion soit soumise correctement pour la prochaine session selon Art. 9.1.3.4.",
+      ],ref:"Art. 9.1.3.4 · Art. 13.3.5"},
+      {tag:"Pression politique",q:"On essaie de te forcer à voter sur une motion",steps:[
+        "Reste calme. Ne vote jamais sous pression.",
+        "Formule standard : 'According to Article 13.3.6 of our constitution, the Speaker holds a casting vote only. This provision does not apply to the current situation.'",
+        "Si la pression continue : 'Any attempt to compel the Speaker to vote contrary to the constitution is itself a breach of Article 13.3.6 and may be treated as a disciplinary matter.'",
+        "Si nécessaire, suspends la session 10 min.",
+        "Consigne l'incident dans les minutes — si récidive, c'est une infraction disciplinaire (Art. 17.1.p).",
+      ],ref:"Art. 13.3.6 · Art. 17.1.p"},
+      {tag:"Finance · Tech Shop",q:"Tu suspectes que des revenus du tech shop ne sont pas déclarés",steps:[
+        "Demande au Audit Committee de vérifier la réconciliation des tickets numérotés pour la période concernée (Art. 15.5.5).",
+        "Compare les tickets émis avec les dépôts sur le compte bancaire de l'Union.",
+        "Si écart : convoque Finance Secretary + responsables devant le Disciplinary Committee (Art. 15.5.6).",
+        "Exige la présence d'un représentant du Bursar lors de la vérification (Art. 15.3.6 — le Bursar doit coopérer).",
+        "Documente tout. Un écart prouvé = infraction disciplinaire automatique (Art. 17.1.c).",
+      ],ref:"Art. 15.5 · 13.6 · Bursar Art. 15.3"},
+      {tag:"Vote de non-confiance",q:"Un vote de non-confiance est soulevé contre toi",steps:[
+        "Tu ne peux pas présider une session qui te concerne. Quitte le fauteuil immédiatement.",
+        "Le Deputy Speaker prend la présidence pour cette session uniquement.",
+        "Tu as les mêmes droits que tout accusé : connaître les charges, présenter ta défense, appeler des témoins (Art. 17.5).",
+        "Majorité requise : 3/4 des membres du Parlement = 15 voix sur 19. C'est très difficile à atteindre.",
+        "Si tu es révoqué : appel possible. Un Speaker ne peut être révoqué que pour faute grave prouvée.",
+      ],ref:"Art. 17.5 · Art. 9.4.3"},
+    ];
+
+    scens.forEach(s=>{
+      html+=`<div class="card">
+        <div class="acc-hdr" onclick="this.parentElement.classList.toggle('op')">
+          <div class="acc-hdr-l">
+            <div class="acc-eyebrow" style="color:var(--red);">${s.tag}</div>
+            <div class="acc-title">${s.q}</div>
+            <div style="font-size:9px;color:var(--text3);font-family:'Courier New',monospace;margin-top:3px;">${s.ref}</div>
+          </div>
+          <div class="acc-arrow">▾</div>
+        </div>
+        <div class="acc-body"><div class="steps">`;
+      s.steps.forEach((st,i)=>html+=`<div class="step"><div class="step-n">${i+1}.</div><div>${st}</div></div>`);
+      html+=`</div></div></div>`;
+    });
+  }
+
+  else if(idx===7){ // CHIFFRES
+    const nums=[
+      ["Membres du SUP","19 total (7 SRC + 10 élus + 2 spéciaux)"],
+      ["Quorum du SUP","10 membres présents"],
+      ["Quorum General Meeting","1/3 des étudiants enregistrés"],
+      ["Majorité simple (résolutions SUP)","Plus de 50% des votes exprimés"],
+      ["Casting vote du Speaker","Seulement en cas d'égalité parfaite"],
+      ["Convocation par demande membres","1/3 des membres SUP (demande écrite)"],
+      ["Vote de non-confiance (Président SRC)","3/4 des membres ordinaires au GM"],
+      ["Vote de non-confiance (Parlementaire)","3/4 de sa circonscription"],
+      ["Réélection Président","Jamais — une seule fois maximum"],
+      ["Préavis Ordinary GM","5 jours ouvrables"],
+      ["Préavis Extra-Ordinary GM","24 heures seulement"],
+      ["Préavis Annual GM","5 jours ouvrables"],
+      ["SUP meetings minimum","2 par semestre"],
+      ["Absences mandat SUP perdu","3 meetings consécutifs sans excuse écrite"],
+      ["Absences mandat SRC perdu","2 meetings consécutifs"],
+      ["Délai referendum après demande","7 jours"],
+      ["Validité referendum","Votes > votes du GM sur la même motion"],
+      ["Signataires compte bancaire","Finance Sec + Président + Bookkeeper + 1 SRC"],
+      ["Signataires requisition fonds","Finance Sec + 3/4 SRC + budget + minutes"],
+      ["Rapport Audit Committee","Mensuel au Parlement"],
+      ["Premier meeting SUP après élections","Dans les 5 jours ouvrables"],
+      ["Premier meeting SRC après élections","Dans les 48 heures"],
+      ["Swearing-in ceremony","1 semaine après élection Parlement"],
+      ["Transition period","2 semaines après publication résultats"],
+      ["Constitution amendée par","Décision GM + referendum obligatoire"],
+      ["Electoral Committee révoqué par","3/4 des membres en Special GM, seulement pour fraude électorale"],
+    ];
+    html=`<div class="card"><div>`;
+    nums.forEach(([k,v])=>html+=`<div class="kv"><div class="kv-k">${k}</div><div class="kv-v">${v}</div></div>`);
+    html+=`</div></div>`;
+    html+=`<div style="margin:8px 16px;padding:11px 13px;border-radius:10px;
+      background:#0e0c14;border:1px solid #2a1e3a;">
+      <div style="font-size:9px;color:var(--purple);font-family:'Courier New',monospace;
+        letter-spacing:.18em;margin-bottom:7px;">TON SERMENT · Schedule C · Constitution AU SU</div>
+      <div style="font-size:13px;color:var(--text3);line-height:1.95;font-style:italic;">
+        "I promise to execute my duties without fear, favour or discrimination but will uphold the Unity of the Union, SRC, Student Union Parliament and honour the Authority of the Students Union Constitution and University Authority in the interest of the Union. So help me God."
+      </div></div>`;
+  }
+
+  document.getElementById('sup-body').innerHTML=html;
+}
+
+function mkCard(title,law,explain,trap=''){
+  return `<div class="card">
+    <div class="acc-hdr" onclick="this.parentElement.classList.toggle('op')">
+      <div class="acc-hdr-l">
+        <div class="acc-eyebrow" style="color:var(--purple);">Article · Constitution AU SU</div>
+        <div class="acc-title">${title}</div>
+      </div><div class="acc-arrow">▾</div>
+    </div>
+    <div class="acc-body">
+      ${law?`<div class="law">"${law}"</div>`:''}
+      <div class="explain">${explain}</div>
+      ${trap?`<div class="trap"><div class="trap-lbl">⚠ PIÈGE POLITIQUE</div>${trap}</div>`:''}
+    </div></div>`;
+}
+
+// ─── GUIDE SAFARI ─────────────────────────────────────────────────────────────
+function renderGuide(){
+  const html=`
+  <div style="margin:14px 16px;padding:12px 14px;border-radius:var(--r);
+    background:#0a0c14;border:1px solid #1a1e2a;">
+    <div style="font-size:9px;color:var(--blue);font-family:'Courier New',monospace;
+      letter-spacing:.18em;margin-bottom:4px;">COMMENT INSTALLER SUR TON IPHONE</div>
+    <div style="font-size:12px;color:var(--text3);line-height:1.7;">
+      Ce fichier peut être sauvegardé comme une vraie app sur ton écran d'accueil.
+    </div>
+  </div>
+
+  <div class="sl">Étape 1 — Obtenir le fichier</div>
+  <div class="card"><div class="steps">
+    <div class="step"><div class="step-n">1.</div><div>
+      Dans Claude, appuie sur le fichier <b>jukal2026_v2.html</b> dans la conversation<br>
+      (c'est le fichier que tu lis maintenant).
+    </div></div>
+    <div class="step"><div class="step-n">2.</div><div>
+      Une page s'ouvre dans Claude. En haut à droite, cherche une icône de partage ou de téléchargement 
+      (carré avec flèche vers le haut). Appuie dessus.
+    </div></div>
+    <div class="step"><div class="step-n">3.</div><div>
+      Dans le menu qui s'ouvre, sélectionne <b>"Enregistrer dans Fichiers"</b> 
+      (ou "Save to Files" si tu es en anglais). Le fichier sera dans ton app Fichiers, 
+      dossier "Sur mon iPhone".
+    </div></div>
+  </div></div>
+
+  <div class="sl">Étape 2 — Ouvrir dans Safari</div>
+  <div class="card"><div class="steps">
+    <div class="step"><div class="step-n">1.</div><div>
+      Ouvre l'app <b>Fichiers</b> sur ton iPhone (icône bleue dossier).
+    </div></div>
+    <div class="step"><div class="step-n">2.</div><div>
+      Navigue vers <b>"Sur mon iPhone"</b> → trouve le fichier <b>jukal2026_v2.html</b>.
+    </div></div>
+    <div class="step"><div class="step-n">3.</div><div>
+      Appuie dessus. Il s'ouvre automatiquement dans Safari. 
+      C'est déjà fonctionnel — tu peux utiliser l'app !
+    </div></div>
+  </div></div>
+
+  <div class="sl">Étape 3 — Installer comme app (optionnel mais recommandé)</div>
+  <div class="card"><div class="steps">
+    <div class="step"><div class="step-n">1.</div><div>
+      Une fois ouvert dans Safari, appuie sur l'icône <b>Partager</b> en bas au centre 
+      (carré avec flèche vers le haut).
+    </div></div>
+    <div class="step"><div class="step-n">2.</div><div>
+      Dans le menu, fais défiler et appuie sur <b>"Sur l'écran d'accueil"</b> 
+      (ou "Add to Home Screen").
+    </div></div>
+    <div class="step"><div class="step-n">3.</div><div>
+      Nomme-la <b>Jukal 2026</b> et appuie sur <b>"Ajouter"</b>.
+    </div></div>
+    <div class="step"><div class="step-n">4.</div><div>
+      L'app apparaît maintenant sur ton écran d'accueil comme une vraie app — 
+      plein écran, sans la barre Safari, avec le titre "Jukal 2026".
+    </div></div>
+  </div></div>
+
+  <div class="sl">Si ça ne marche pas</div>
+  <div class="card"><div class="steps">
+    <div class="step"><div class="step-n">A.</div><div>
+      <b>Le fichier ne s'ouvre pas :</b> assure-toi qu'il est bien au format .html 
+      (pas .txt). Dans Fichiers, appuie longuement dessus → "Partager" → "Ouvrir dans Safari".
+    </div></div>
+    <div class="step"><div class="step-n">B.</div><div>
+      <b>Mes cases cochées disparaissent :</b> l'app utilise localStorage de Safari. 
+      Si tu effaces l'historique Safari, les données sont perdues. 
+      Solution : ne pas effacer l'historique pour ce site.
+    </div></div>
+    <div class="step"><div class="step-n">C.</div><div>
+      <b>Je n'ai pas iPhone :</b> sur Android, ouvre dans Chrome → menu (3 points) 
+      → "Ajouter à l'écran d'accueil". Même résultat.
+    </div></div>
+  </div></div>
+
+  <div style="margin:12px 16px 0;padding:11px 13px;border-radius:10px;
+    background:#090f09;border:1px solid #182018;">
+    <div style="font-size:9px;color:var(--green);font-family:'Courier New',monospace;
+      letter-spacing:.18em;margin-bottom:5px;">NOTE IMPORTANTE</div>
+    <div style="font-size:12px;color:var(--text3);line-height:1.7;">
+      Tes données (cases cochées) sont sauvegardées localement sur ton iPhone dans Safari. 
+      Elles restent même si tu fermes l'app. Elles disparaissent seulement si tu effaces 
+      manuellement les données de navigation Safari.
+    </div>
+  </div>`;
+  document.getElementById('guide-body').innerHTML=html;
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+renderTracker();
+</script>
+</body>
+</html>
